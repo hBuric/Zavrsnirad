@@ -41,10 +41,10 @@ float temp = 0;
 int mapTEMP = 0;
 int sensorValue = 0;
 int mapSensor = 0;
-int firstCounter=0;
-int firstModeRPM=0;
-int firstModeKPH=0;
-int firstModeTEMP=0;
+int firstCounter=0;//prvjera dali je kod došao do kraja prvee fje u loopu
+int firstModeRPM=0;//prva provjera za modeRPM  
+int firstModeKPH=0;//prva provjera za modeKPH
+int firstModeTEMP=0;//prva provjera za modeTemp
 
 void setup() {
 
@@ -66,7 +66,7 @@ void setup() {
   tm.displayText("ConnDone");
   delay(1000);
 }
-void modeBtnCheck() { 
+void modeBtnCheck() { //provjera za pritisak gumba za promjenu moda rada
 
        
   time_now = millis();
