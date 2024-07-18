@@ -41,10 +41,10 @@ float temp = 0;
 int mapTEMP = 0;
 int sensorValue = 0;
 int mapSensor = 0;
-int firstCounter=0;//prvjera dali je kod došao do kraja prvee fje u loopu
-int firstModeRPM=0;//prva provjera za modeRPM  
-int firstModeKPH=0;//prva provjera za modeKPH
-int firstModeTEMP=0;//prva provjera za modeTemp
+int firstCounter=0;
+int firstModeRPM=0;
+int firstModeKPH=0;
+int firstModeTEMP=0;
 
 void setup() {
 
@@ -57,16 +57,17 @@ void setup() {
   ELM_PORT.begin(38400);
   Serial.begin(9600);
   delay(3000);
-  while(!myELM327.begin(ELM_PORT, true, 300, '0'))
+  if(!myELM327.begin(ELM_PORT, true, 300, '0'))
   {
     tm.displayText("no Conn");
+    while(!myELM327.begin(ELM_PORT, true, 300, '0'));
     
   }
   if(myELM327.begin(ELM_PORT, true, 300, '0'))
   tm.displayText("ConnDone");
   delay(1000);
 }
-void modeBtnCheck() { //provjera za pritisak gumba za promjenu moda rada
+void modeBtnCheck() { 
 
        
   time_now = millis();
@@ -100,13 +101,13 @@ void modeRPM() {
     firstModeRPM++;
   }
  
-  if (myELM327.nb_rx_state != ELM_SUCCESS)
+  if (myELM327.nb_rx_state == ELM_SUCCESS)
   {
     tm.displayIntNum((int32_t)tempRPM);
     Serial.println(tempRPM);
          
   }
-  else if (myELM327.nb_rx_state == ELM_GETTING_MSG)
+  else if (myELM327.nb_rx_state != ELM_GETTING_MSG)
   {
     tm.displayText("noRPDATA");       
   }
@@ -121,13 +122,13 @@ void modeKPH() {
   }
 
   float tempKPH = (int32_t)myELM327.kph();
-  if (myELM327.nb_rx_state != ELM_SUCCESS)
+  if (myELM327.nb_rx_state == ELM_SUCCESS)
   {
-    tm.displayIntNum(tempKPH);
+    tm.displayIntNum((int32_t)tempKPH);
     Serial.println(tempKPH);
          
   }
-  else if (myELM327.nb_rx_state == ELM_GETTING_MSG)
+  else if (myELM327.nb_rx_state != ELM_GETTING_MSG)
   {
    tm.displayText("noKPDATA"); 
     
@@ -142,13 +143,13 @@ void modeTEMP() {
     firstModeTEMP++;
   }
   float tempTemp = myELM327.engineCoolantTemp();
-  if ((myELM327.nb_rx_state != ELM_SUCCESS) && tempTemp >= 0)
+  if ((myELM327.nb_rx_state == ELM_SUCCESS) && tempTemp >= 0)
   {
     tm.displayIntNum((int32_t)tempTemp);
     Serial.println(tempTemp);
     
   }
-  else if (myELM327.nb_rx_state == ELM_GETTING_MSG)
+  else if (myELM327.nb_rx_state != ELM_GETTING_MSG)
   {
     tm.displayText("noTPDATA");
 }
@@ -171,7 +172,7 @@ void loop() {
   else if (btnModePushCounter == 2) {
     modeTEMP();
   }
-  
+  previousBtnModeState = btnModeState;
 
 }
 
